@@ -1,7 +1,9 @@
 let song;
 let song2;
+let songBg;
 let input;
 let button;
+let question;
 
 class Player {
   constructor(row, col, img, name, pos) {
@@ -24,6 +26,7 @@ class Player {
     this.image = loadImage(`assets/img${this.playerImageNumber}.png`);
     song = loadSound("/Shortcutz/assets/NFF-robo-toggle.wav");
     song2 = loadSound("/Shortcutz/assets/NFF-ugly-alarm.wav");
+    songBg = loadSound("/Shortcutz/assets/EtyenElephantInTheRoom.m4a");
   }
 
   draw() {
@@ -36,6 +39,8 @@ class Player {
   }
 
   move() {
+    if (game.questionAsked === true) return;
+
     let prevMoves = game.moves;
     if (game.moves > 0) {
       if (keyCode === RIGHT_ARROW) this.moveRight();
@@ -49,6 +54,10 @@ class Player {
 
     let space = game.board.grid[this.row][this.col];
 
+    if (space.color === "green") {
+      prevMoves = 1;
+      game.moves = 0;
+    }
     if (game.moves === 0 && prevMoves === 1) {
       // POINTS ATTRIBUTION
       let score = this.playerCoins + game.board.grid[this.row][this.col].points;
@@ -59,7 +68,8 @@ class Player {
         if (
           this.playerName !== player.playerName &&
           this.row == player.row &&
-          this.col == player.col
+          this.col == player.col &&
+          space.color !== "red"
         ) {
           player.row = this.prevPosition[0];
           player.col = this.prevPosition[1];
@@ -73,44 +83,157 @@ class Player {
       // sets the previous position to the current after the turn
       this.prevPosition = [this.row, this.col];
 
+      // if (keyCode === 77) {
+      //   player.songBg.play();
+      // }
+
       if (space.color === "red") {
         // ASK A QUESTION
 
         const randomIndex = Math.floor(Math.random() * quizArray.length);
         const quiz = quizArray[randomIndex];
 
-        const question = createElement("p", quiz.question);
-        question.position(20, 100);
+        question = createElement("p", quiz.question);
+        question.position(400, 400);
 
         input = createInput();
-        input.position(20, 130);
+        input.position(500, 440);
         button = createButton("submit");
-        button.position(input.x + input.width, 130);
+        button.position(540, 465);
+
+        game.questionAsked = true;
+
         button.mousePressed(() => {
           console.log(input.value());
           console.log(quiz.answer);
           if (input.value().toLowerCase() === quiz.answer) {
-            this.playerCoins += 500;
+            this.playerCoins += 300;
+
+            game.newPlayerArray.forEach(player => {
+              if (
+                this.playerName !== player.playerName &&
+                this.row == player.row &&
+                this.col == player.col
+              ) {
+                player.row = prevPositionCopy[0];
+                player.col = prevPositionCopy[1];
+                player.prevPosition = this.prevPosition;
+                song2.play();
+              }
+            });
           } else {
             this.row = prevPositionCopy[0];
             this.col = prevPositionCopy[1];
-            // player.row = this.prevPosition[0];
-            // player.col = this.prevPosition[1];
           }
 
           question.hide();
           input.hide();
           button.hide();
+
+          game.questionAsked = false;
         });
+      }
+
+      if (space.color === "green") {
+        // game.moves = 0;
+
+        const randomIndex = Math.floor(Math.random() * quizArray.length);
+        const quiz = quizArray[randomIndex];
+
+        question = createElement("p", quiz.question);
+        question.position(400, 400);
+
+        input = createInput();
+        input.position(500, 440);
+        button = createButton("submit");
+
+        game.questionAsked = true;
+
+        button.position(540, 465);
+        button.mousePressed(() => {
+          console.log(input.value());
+          console.log(quiz.answer);
+          if (input.value().toLowerCase() === quiz.answer) {
+            question.hide();
+            input.hide();
+            button.hide();
+            game.gameOver = true;
+          } else {
+            this.row = prevPositionCopy[0];
+            this.col = prevPositionCopy[1];
+            question.hide();
+            input.hide();
+            button.hide();
+            game.questionAsked = false;
+          }
+        });
+        setTimeout(() => {
+          question.hide();
+          input.hide();
+          button.hide();
+          this.row = prevPositionCopy[0];
+          this.col = prevPositionCopy[1];
+
+          game.questionAsked = false;
+        }, this.playerCoins * 10);
       }
     }
 
-    if (space.color === "green") {
-      game.moves = 0;
-      let score = this.playerCoins + game.board.grid[this.row][this.col].points;
-      if (prevMoves > 0) this.playerCoins = score;
-      console.log("hooray");
+    if (space.color === "blue") {
+      if (keyCode === 69) {
+        game.moves = 0;
+        game.newPlayerArray.forEach(player => {
+          if (
+            this.playerName !== player.playerName &&
+            this.row == player.row &&
+            this.col == player.col
+          ) {
+            player.row = prevPositionCopy[0];
+            player.col = prevPositionCopy[1];
+            player.prevPosition = this.prevPosition;
+            song2.play();
+          }
+        });
+        // game.playerTurn++;
+      }
     }
+
+    if (space.color === "orange" && game.moves == 0 && keyCode === 51) {
+      game.moves = game.moves + 2;
+    }
+
+    if (space.color === "cyan") {
+      let rowLength = game.board.grid[0].length;
+      let portals = game.board.grid
+        .flat()
+        .map(function(el, i) {
+          let obj = Object.assign({}, el);
+          let row = Math.floor(i / rowLength);
+          let col = i % rowLength;
+          obj.row = row;
+          obj.col = col;
+          return obj;
+        })
+        .filter(function(el) {
+          if (el.color === "cyan") {
+            return true;
+          }
+        })
+        .map(function(el) {
+          return [el.row, el.col];
+        });
+      let randPortal = portals[Math.floor(Math.random() * portals.length)];
+      if (this.row == randPortal.row && this.col == randPortal.col) {
+        console.log("minimin");
+        // this.row =
+        // this.col =
+      }
+      console.log(randPortal);
+      // select a random portal from the portals array
+      // switch player row & col with the picked square's coordinates
+      //debugger;
+    }
+
     console.log(this.playerCoins);
 
     game.newPlayerArray.forEach(function(player) {

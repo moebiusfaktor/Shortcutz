@@ -8,12 +8,20 @@ function setup() {
 }
 
 function draw() {
-  game.draw();
+  if (game.gameOver === false) {
+    game.draw();
+  } else {
+    game.drawOver();
+  }
+
   // player.draw();
 }
 
 function keyPressed() {
-  game.diceroll();
+  if (keyCode === 32) {
+    game.diceroll();
+  }
+
   if (game.playerTurn !== -1)
     game.newPlayerArray[game.playerTurn % game.newPlayerArray.length].move();
 }
