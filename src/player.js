@@ -10,7 +10,7 @@ let songCoin;
 let songStop;
 let songWrong;
 let songCorrect;
-let songFanfare;
+let songGreen;
 let songVictory;
 
 class Player {
@@ -41,7 +41,7 @@ class Player {
     songStop = loadSound("assets/man-stop.wav");
     songWrong = loadSound("assets/manWrong.mp3");
     songCorrect = loadSound("assets/manCorrect.mp3");
-    songFanfare = loadSound("assets/twokazooFanfare.wav)");
+    songGreen = loadSound("assets/twokazooFanfare.wav");
     songVictory = loadSound("assets/victoryFanfare.wav");
   }
 
@@ -199,7 +199,7 @@ class Player {
 
       if (space.color === "green") {
         // game.moves = 0;
-        // songGreen.play();
+        songGreen.play();
         const randomIndex = Math.floor(Math.random() * quizArray.length);
         const quiz = quizArray[randomIndex];
 
