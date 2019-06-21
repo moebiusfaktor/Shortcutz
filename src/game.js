@@ -61,8 +61,8 @@ class Game {
       (this.moves === 0 || this.moves === undefined) &&
       this.questionAsked === false
     ) {
-      let dice1 = Math.ceil(Math.random() * 8);
-      let dice2 = Math.ceil(Math.random() * 8);
+      let dice1 = Math.ceil(Math.random() * 5);
+      let dice2 = Math.ceil(Math.random() * 5);
       let moves = dice1 + dice2;
       this.moves = moves;
       this.playerTurn++;
