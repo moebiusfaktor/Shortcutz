@@ -166,5 +166,41 @@ const quizArray = [
   {
     question: "Capital of Croatia",
     answer: "zagreb"
+  },
+  {
+    question: "Which planet is farthest from the sun?",
+    answer: "neptune"
+  },
+  {
+    question: "Which planet is the largest in our solar system?",
+    answer: "jupiter"
+  },
+  {
+    question: "which planet is the hottest in our solar system?",
+    answer: "venus"
+  },
+  {
+    question: "Highest mountain in Germany?",
+    answer: "zugspitze"
+  },
+  {
+    question: "Highest mountain in the world?",
+    answer: "everest"
+  },
+  {
+    question: "Highest mountain in Africa?",
+    answer: "kilimanjaro"
+  },
+  {
+    question: "longest river in europe?",
+    answer: "danube"
+  },
+  {
+    question: "Highest mountain in the USA?",
+    answer: "denali"
+  },
+  {
+    question: "which planet is called “The red planet“?",
+    answer: "mars"
   }
 ];
